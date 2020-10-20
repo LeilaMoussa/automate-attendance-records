@@ -2,7 +2,7 @@
 Automatically update attendance records on Google Sheets
 
 Todos:
-- Update cells corresponding to a date and a name, assuming no error handling.
+- SUM function for new members.
 - Implement ten most active members, two most popular events, two least popular events.
 - Error handling 1: name does not exist (RE?)...
 - Data sanitization and formatting
