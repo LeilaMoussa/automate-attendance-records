@@ -1,7 +1,10 @@
 """
 Get formatted list of attendees/dar al aman tutors and date
 input in the form of array of names, ignore ids for now
+actually, ids may be a more reliable form of input (less typos)
 """
+## think input method later (consider outlook, phone directly, as automated as possible)
+
 import gspread
 import oauth2client
 
@@ -9,18 +12,23 @@ gc = gspread.oauth()
 
 sh = gc.open("Attendance Records")
 
-print(sh.sheet1.get('B1'))
+worksheet = sh.worksheet('Fall 20') # This semester's sheet.
 
-## think input method later (consider outlook, phone directly, as automated as possible)
+attendees = ['Leila Farah Moussa', 'Hanane Nour Moussa']
 
-#date = input("Day of event?") ##MM/DD/YYYY, must match sheet
+#date = input("Day of event?\n") ##MM/DD/YY, must match sheet
+date = '10/20/20'
 
-"""
-identify column by date
-for each name, format as needed and look for row
-if found, change value from 0 to 1
-if not found: either the person is not there or it's a issue of spelling (case & spaces are taken care of, so at least one letter is off)
-in that case: see how different the name is from the other names, if it's a very small difference (2 letters off) assume they're the same person
-otherwise, create a new row
-much printing throughout
-"""
+date_column = worksheet.find(date, 1, None).col  # this of course assumes the date is there, otherwise, create a column
+
+for name in attendees:
+    try:
+        name_row = worksheet.find(name, None, 1).row
+        worksheet.update_cell(name_row, date_column, 1)
+    except:
+        print("Adding new name...")
+        # Insert name at first row
+        worksheet.insert_row([name, ''] + [0]*(date_column-3) + [1], 2) ## ISSUE!! last column for each row should be the sum: how to use excel functions from here?
+
+print("All done!")
+
