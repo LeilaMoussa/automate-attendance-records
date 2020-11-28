@@ -1,5 +1,5 @@
 # automate-attendance-records
-Automatically update attendance records on Google Sheets
+Easily update attendance records on Google Sheets from automatically generated CSV files.
 
 Todos:
 - [ ] Active members
@@ -7,3 +7,4 @@ Todos:
 - [ ] Tutoring
 - [ ] Fix encoding issue
 - [ ] Typos in names: what differentiates a typo from a slighly different name?
+- [ ] Sufficient testing
