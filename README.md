@@ -5,6 +5,6 @@ Todos:
 - [ ] Active members
 - [ ] Popular events
 - [ ] Tutoring
-- [ ] Fix encoding issue
+- [ ] Fix encoding issues
 - [ ] Typos in names: what differentiates a typo from a slighly different name?
 - [ ] Sufficient testing
