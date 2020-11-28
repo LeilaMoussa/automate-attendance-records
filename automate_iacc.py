@@ -8,11 +8,11 @@ gc = gspread.oauth()
 semester = 'Fall 20'
 
 def removeBadBytes(filename):
-    # This is some weird encoding issue I don't know how to fix
+    # This is some weird encoding issue I don't know how to fix.
     fi = open(filename, 'rb')
     data = fi.read()
     fi.close()
-    fo = open('mynew.csv', 'wb')
+    fo = open('mynew.csv', 'wb')  # Temp file.
     fo.write(data.replace(b'\x00', b''))
     fo.close()
     f = open('mynew.csv')
@@ -26,34 +26,29 @@ def getRangeEnd(first_empty_row, number_rows, date_column) -> str:
     col = string.ascii_uppercase[date_column-1]
     row = first_empty_row + number_rows - 1
     cell = col + str(row)
-    print(cell)
     return cell
 
 def update_meetings():
     print("Okay!")
     
     sh = gc.open("Attendance Records")
-    worksheet = sh.worksheet(semester) # This semester's sheet.
+    worksheet = sh.worksheet(semester)
 
-    #date = input('Day of event?\n') ##MM/DD/YY, must match sheet
-    #date = '10/20/20'
-    #attendees = ['Leila Farah Moussa', 'Hanane Nour Moussa']
-
-    filename = 'C:\\Users\\mouss\\Downloads\\meetingAttendanceList.csv'
-    #filename = input("Attendance list path?\n")
+    filename = input("Attendance list path?\n")
     reader = removeBadBytes(filename)
 
     attendees = set()
     for i, data_row in enumerate(reader):
+        # print("data row", data_row)
+        # Very bad encoding problems with Excel files turned to CSV!
+        # Solution: start with a CSV.
         if i == 0:
             date = data_row['Timestamp'].split(',')[0]
-            date = date[:-2]  # Just for formatting
+            date = date[:-2]  # Just for formatting, remove '20'.
         attendees.add(data_row['Full Name'])
-    print(attendees)
 
     date_column = worksheet.find(date, 1, None).col
-    # this of course assumes the date is there, otherwise, i must create a column
-    # tbh, maybe i shouldn't be bothered by this, let's just put all possible dates
+    # All dates are already there.
     
     missing = []
     existing = 0
@@ -63,18 +58,18 @@ def update_meetings():
             name, _id = person, ''
         elif len(split) == 2:
             name, _id = split[0], split[1][:5]
+        name = name.title()  # Capitalize names.
 
         try:
             name_row = worksheet.find(name, None, 1).row
-            print("Name already exists")
+            # print("Name already exists")
             existing += 1
             worksheet.update_cell(name_row, date_column, 1)
         except:
-            print("Adding new name...")
+            # print("Adding new name...")
             missing.append([name, _id]+[0]*(date_column-3)+[1])
 
     first_empty_row = existing + 2
-    # I guess i'll just update cells...
 
     last_cell = getRangeEnd(first_empty_row, len(missing), date_column)
     worksheet.update(f'A{first_empty_row}:{last_cell}', missing)
@@ -98,4 +93,3 @@ if __name__ == '__main__':
         update_meetings()
     elif event == 'T':
         update_tutoring()
-    
