@@ -2,10 +2,12 @@ import gspread
 import oauth2client
 import csv
 import string
+import time
 
 gc = gspread.oauth()
 
 semester = 'Fall 20'
+board_members = ('Leila Farah Moussa', 'Hanane Nour Moussa', 'Yassir Benabdallah', 'Naeem Nisar Sheikh')
 
 def removeBadBytes(filename):
     # This is some weird encoding issue I don't know how to fix.
@@ -28,20 +30,25 @@ def getRangeEnd(first_empty_row, number_rows, date_column) -> str:
     cell = col + str(row)
     return cell
 
+def getFirstEmptyRow(worksheet) -> int:
+    row = 2
+    while worksheet.cell(row, 1) != '':
+        row += 1
+    return row
+
 def update_meetings():
     print("Okay!")
     
     sh = gc.open("Attendance Records")
     worksheet = sh.worksheet(semester)
 
-    filename = input("Attendance list path?\n")
+    #filename = input("Attendance list path?\n")
+    filename = 'sheet.csv'
     reader = removeBadBytes(filename)
 
     attendees = set()
     for i, data_row in enumerate(reader):
-        # print("data row", data_row)
         # Very bad encoding problems with Excel files turned to CSV!
-        # Solution: start with a CSV.
         if i == 0:
             date = data_row['Timestamp'].split(',')[0]
             date = date[:-2]  # Just for formatting, remove '20'.
@@ -62,26 +69,48 @@ def update_meetings():
 
         try:
             name_row = worksheet.find(name, None, 1).row
-            # print("Name already exists")
+            print("Name already exists")
             existing += 1
             worksheet.update_cell(name_row, date_column, 1)
         except:
-            # print("Adding new name...")
+            print("Adding new name...")
             missing.append([name, _id]+[0]*(date_column-3)+[1])
 
-    first_empty_row = existing + 2
+    print("Waiting for a minute to avoid exhausting the resource. Go drink some water or something.")
+    time.sleep(60)
+    first_empty_row = getFirstEmptyRow(worksheet)
 
     last_cell = getRangeEnd(first_empty_row, len(missing), date_column)
     worksheet.update(f'A{first_empty_row}:{last_cell}', missing)
 
     print("All done!")
-    # 3 most active members so far
-    # find at most three occurrences of the max value in count column
-    # print corresponding people
+    return
+    ########################################
+    print("The 3 most active non-board members...")
+    count_column = worksheet.find('Count of attendance so far', 1, None).col
+    counts = worksheet.col_values(count_column)  # This is an ordered list.
+    print("counts", counts)
+    max_val = max(counts)
+    rows = [i+2 for i, x in enumerate(counts) if x == max_val]
+    for row in rows:
+        frequent_attendee = worksheet.cell(row, 1)
+        print("freq attendee", frequent_attendee)
+        if frequent_attendee not in board_members:
+            print(frequent_attendee, ", ")
+    print(f'have come {max_val} times.')
     
-    # most popular event so far
+    print("The most popular monday meeting so far...")
     # find single max value in last row
-    # print its corresponding date
+    event_row = worksheet.find('Event Attendance', None, None) or 44  # resolves to boolean or actual choices?
+    events = worksheet.row_values(event_row)
+    print("events row", events)
+    max_att = 0
+    for i, val in events:
+        if val > max_att:
+            max_att = val
+            letter = i+2 ## not sure about this, need to look at 'events'
+    event_date = worksheet.cell(1, letter)
+    print("was on the", event_date)
 
 def update_tutoring():
     print("Okay!")
@@ -93,3 +122,4 @@ if __name__ == '__main__':
         update_meetings()
     elif event == 'T':
         update_tutoring()
+    print("Have a nice day <3")
