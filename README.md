@@ -9,6 +9,7 @@ Todos:
 - [x] Popular events
 - [ ] Tutoring
 - [x] Fix encoding issues (somewhat)
+- [ ] Hide constants in a separate module.
 
 Future work:
 - [ ] Typos in names: what differentiates a typo from a slighly different name?
