@@ -4,13 +4,12 @@ Cannot be used with Excel files whose extensions were changed -- must be an actu
 Any help/feedback is super appreciated.
 
 Todos:
-- [ ] Decrease the number or at least the frequency of API calls to stay within the quota: consider getting all values once and writing once.
+- [x] Decrease the number or at least the frequency of API calls to stay within the quota: consider getting all values once and writing once.
 - [x] Active members
-- [x] Popular events
+- [x] Popular events (needs testing)
 - [ ] Tutoring
 - [x] Fix encoding issues (somewhat)
 - [ ] Hide constants in a separate module.
 
 Future work:
-- [ ] Typos in names: what differentiates a typo from a slighly different name?
-- [ ] Consider another function instead of waiting to decrease API call frequency.
+- [ ] Typos in names: what differentiates a typo from a slighly different name? ==> Fuzzy search!
