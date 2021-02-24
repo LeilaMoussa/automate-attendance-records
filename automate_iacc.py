@@ -98,10 +98,10 @@ def update_meetings():
     write_back(recs, worksheet)
 
     print("All done!")
-    return
+    # return
 
     ########################################
-    # May or may not come back here...
+    # I need to abstract these things away
     
     print("The 3 most active non-board members...")
     count_column = worksheet.find('Count of attendance so far', 1, None).col
@@ -118,14 +118,14 @@ def update_meetings():
     
     print("The most popular monday meeting so far...")
     # find single max value in last row
-    event_row = worksheet.find('Event Attendance', None, None) or 44  # Should be length of records!
+    event_row = worksheet.find('Event Attendance', None, None) or 60  # Length of records: shouldn't be a constant...
     events = worksheet.row_values(event_row)
     print("events row", events)
     max_att = 0
     for i, val in events:
         if val > max_att:
             max_att = val
-            letter = i+2 ## not sure about this, need to look at 'events'
+            letter = i+2 ## need to look at 'events'
     event_date = worksheet.cell(1, letter)
     print("was on the", event_date)
 
