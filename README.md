@@ -12,4 +12,5 @@ Todos:
 - [ ] Hide constants in a separate module.
 
 Future work:
-- [ ] Typos in names: what differentiates a typo from a slighly different name? ==> Fuzzy search?
+- [ ] Typos in names: what differentiates a typo from a slightly different name? ==> Fuzzy search?
+- [ ] Provide an optional UI (form submission)
